@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif PABP - Sejarah Dakwah Nabi Muhammad SAW</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+        }
+        .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        .btn-bounce:active {
+            transform: translateY(1px);
+        }
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between text-slate-800 p-3 md:p-6">
+
+    <!-- Header Navigation -->
+    <header class="max-w-4xl w-full mx-auto flex justify-between items-center bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/10 mb-4 shadow-lg text-white">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-xl font-bold shadow-md">
+                <i class="fa-solid fa-mosque"></i>
+            </div>
+            <div>
+                <h1 class="font-heading text-lg md:text-xl font-bold text-amber-300 leading-tight">Petualangan Sirah Nabawiyah</h1>
+                <p class="text-xs text-slate-300">PABP Kelas 4 • Dakwah Sembunyi-Sembunyi</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="soundToggleBtn" onclick="toggleSound()" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition" title="Efek Suara">
+                <i id="soundIcon" class="fa-solid fa-volume-high text-amber-300"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl w-full mx-auto my-auto">
+
+        <!-- LOBBY SCREEN -->
+        <div id="lobbyScreen" class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl text-center animate-pop">
+            <div class="w-20 h-20 mx-auto mb-4 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-4xl shadow-inner">
+                <i class="fa-solid fa-book-quran"></i>
+            </div>
+            <h2 class="font-heading text-2xl md:text-4xl font-extrabold text-slate-800 mb-2">Evaluasi Sumatif PABP</h2>
+            <p class="text-slate-600 max-w-lg mx-auto text-sm md:text-base mb-6">
+                Uji pemahamanmu tentang Sejarah Dakwah Sembunyi-Sembunyi Nabi Muhammad SAW dan Sahabat Assabiqunal Awalun!
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
+                    <i class="fa-solid fa-list-check text-emerald-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-slate-700">25 Soal PG</h3>
+                    <p class="text-xs text-slate-500">Pilihan Ganda A, B, C, D</p>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
+                    <i class="fa-solid fa-pen-to-square text-amber-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-slate-700">10 Soal Isian</h3>
+                    <p class="text-xs text-slate-500">Jawaban Isian Singkat</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200">
+                    <i class="fa-solid fa-award text-purple-600 text-2xl mb-1"></i>
+                    <h3 class="font-bold text-slate-700">Skor & Pembahasan</h3>
+                    <p class="text-xs text-slate-500">Ulasan Otomatis</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                <button onclick="startGame('pg')" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-heading text-lg px-6 py-3.5 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i> Mainkan Pilihan Ganda (25 Soal)
+                </button>
+                <button onclick="startGame('isian')" class="btn-bounce bg-amber-500 hover:bg-amber-600 text-white font-heading text-lg px-6 py-3.5 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pencil"></i> Mainkan Isian (10 Soal)
+                </button>
+                <button onclick="startGame('all')" class="btn-bounce bg-indigo-600 hover:bg-indigo-700 text-white font-heading text-lg px-6 py-3.5 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-trophy"></i> Semua Soal (35 Soal)
+                </button>
+            </div>
+        </div>
+
+        <!-- GAMEPLAY SCREEN -->
+        <div id="gameScreen" class="hidden glass-card rounded-3xl p-5 md:p-8 shadow-2xl animate-pop">
+            <!-- HUD Stats -->
+            <div class="flex justify-between items-center mb-6 bg-slate-100/80 p-3 rounded-2xl border border-slate-200">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white px-3 py-1.5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-star text-amber-500"></i>
+                        <span id="scoreText" class="font-bold text-slate-800 text-sm md:text-base">Skor: 0</span>
+                    </div>
+                    <div class="bg-white px-3 py-1.5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-orange-500"></i>
+                        <span id="streakText" class="font-bold text-slate-800 text-sm md:text-base">Streak: 0</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span id="progressText" class="font-bold text-xs md:text-sm text-indigo-700">Soal 1 dari 25</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden mb-6">
+                <div id="progressBar" class="bg-gradient-to-r from-emerald-400 to-indigo-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div id="questionBox" class="mb-6">
+                <div class="inline-block bg-indigo-100 text-indigo-800 font-bold text-xs px-3 py-1 rounded-full mb-3" id="questionBadge">
+                    Pilihan Ganda
+                </div>
+                <h3 id="questionText" class="font-heading text-lg md:text-22px text-slate-800 leading-snug mb-4">
+                    Teks pertanyaan akan ditampilkan di sini...
+                </h3>
+
+                <!-- Context Box for reading passages -->
+                <div id="passageBox" class="hidden bg-amber-50/90 border border-amber-200 rounded-2xl p-4 mb-4 text-sm text-slate-700 leading-relaxed shadow-inner">
+                </div>
+
+                <!-- Answer Options (PG) -->
+                <div id="pgOptions" class="grid grid-cols-1 gap-3">
+                    <!-- Dynamic Buttons -->
+                </div>
+
+                <!-- Answer Input (Isian) -->
+                <div id="isianBox" class="hidden flex flex-col gap-3">
+                    <input type="text" id="isianInput" placeholder="Ketik jawabanmu di sini..." class="w-full px-5 py-4 rounded-2xl border-2 border-slate-300 focus:border-indigo-500 focus:outline-none text-lg text-slate-800 font-medium transition shadow-inner">
+                    <button onclick="submitIsianAnswer()" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-heading text-lg py-3.5 rounded-2xl shadow-md transition">
+                        Kirim Jawaban <i class="fa-solid fa-paper-plane ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback & Explanation Box -->
+            <div id="feedbackBox" class="hidden p-4 rounded-2xl border mb-6 animate-pop">
+                <div class="flex items-start gap-3">
+                    <div id="feedbackIcon" class="text-2xl mt-0.5"></div>
+                    <div>
+                        <h4 id="feedbackTitle" class="font-bold text-base md:text-lg mb-1"></h4>
+                        <p id="feedbackText" class="text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex justify-between items-center pt-2">
+                <button onclick="confirmExit()" class="text-slate-400 hover:text-rose-500 font-medium text-sm transition">
+                    <i class="fa-solid fa-arrow-left"></i> Keluar
+                </button>
+                <button id="nextBtn" onclick="nextQuestion()" class="hidden btn-bounce bg-indigo-600 hover:bg-indigo-700 text-white font-heading px-6 py-2.5 rounded-xl shadow-md transition">
+                    Lanjut <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div id="resultScreen" class="hidden glass-card rounded-3xl p-6 md:p-10 shadow-2xl text-center animate-pop">
+            <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl shadow-lg" id="resultBadge">
+                <i id="resultIcon" class="fa-solid fa-trophy"></i>
+            </div>
+            <h2 id="resultTitle" class="font-heading text-2xl md:text-4xl font-extrabold text-slate-800 mb-1">Luar Biasa!</h2>
+            <p id="resultSubtitle" class="text-slate-600 mb-6 text-sm md:text-base">Kamu telah menyelesaikan kuis ini.</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto mb-8">
+                <div class="bg-white/80 p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Skor Akhir</p>
+                    <p id="finalScore" class="font-heading text-2xl md:text-3xl text-emerald-600 font-bold">100</p>
+                </div>
+                <div class="bg-white/80 p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Benar</p>
+                    <p id="finalCorrect" class="font-heading text-2xl md:text-3xl text-blue-600 font-bold">25</p>
+                </div>
+                <div class="bg-white/80 p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Salah</p>
+                    <p id="finalWrong" class="font-heading text-2xl md:text-3xl text-rose-500 font-bold">0</p>
+                </div>
+                <div class="bg-white/80 p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Akurasi</p>
+                    <p id="finalAccuracy" class="font-heading text-2xl md:text-3xl text-purple-600 font-bold">100%</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-3 mb-8">
+                <button onclick="resetLobby()" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-heading text-base px-6 py-3 rounded-2xl shadow-md transition">
+                    <i class="fa-solid fa-rotate-right"></i> Coba Lagi
+                </button>
+                <button onclick="toggleReviewModal()" class="btn-bounce bg-indigo-600 hover:bg-indigo-700 text-white font-heading text-base px-6 py-3 rounded-2xl shadow-md transition">
+                    <i class="fa-solid fa-book-open"></i> Lihat Ulasan Pembahasan
+                </button>
+            </div>
+
+            <!-- Detailed Review List inside Result -->
+            <div id="reviewContainer" class="hidden text-left bg-white/90 p-5 rounded-2xl border border-slate-200 max-h-96 overflow-y-auto">
+                <h3 class="font-heading text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center justify-between">
+                    <span><i class="fa-solid fa-list text-indigo-600 mr-2"></i> Rincian Pembahasan Soal</span>
+                    <button onclick="toggleReviewModal()" class="text-slate-400 hover:text-slate-600 text-sm"><i class="fa-solid fa-xmark"></i> Tutup</button>
+                </h3>
+                <div id="reviewList" class="space-y-4">
+                    <!-- Dynamic Review Cards -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-400 mt-6 py-2">
+        <p>Aplikasi Kuis Interaktif PABP &copy; 2026 - Sirah Nabawiyah Kelas 4 SD</p>
+    </footer>
+
+    <!-- Audio Synth Logic -->
+    <script>
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSynthSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now); // A3
+                osc.frequency.exponentialRampToValueAtTime(174.61, now + 0.2); // F3
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'fanfare') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                const freqs = [523.25, 659.25, 783.99, 1046.50];
+                freqs.forEach((f, idx) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.frequency.setValueAtTime(f, now + idx * 0.1);
+                    g.gain.setValueAtTime(0.2, now + idx * 0.1);
+                    g.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+                    o.start(now + idx * 0.1);
+                    o.stop(now + idx * 0.1 + 0.3);
+                });
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-amber-300';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-400';
+            }
+        }
+    </script>
+
+    <!-- Quiz Data & Logic -->
+    <script>
+        // Database Question Items
+        const pgData = [
+            {
+                id: 1,
+                type: 'pg',
+                question: 'Pada awal masa kenabian, Nabi Muhammad berdakwah secara sembunyi-sembunyi yang berarti...',
+                options: [
+                    'Nabi bersembunyi di gua',
+                    'Dakwah secara diam-diam dan rahasia',
+                    'Dakwah menggunakan kode rahasia',
+                    'Dakwah menggunakan tulisan tersembunyi'
+                ],
+                correct: 1,
+                rationale: 'Dakwah secara sembunyi-sembunyi (Sirriyyah) berarti menyampaikan ajaran Islam secara rahasia dan diam-diam kepada keluarga dan sahabat terdekat.'
+            },
+            {
+                id: 2,
+                type: 'pg',
+                passage: 'Perhatikan tabel di bawah!<br>1. Mengajak orang terdekatnya<br>2. Berkhutbah di depan orang banyak<br>3. Berdakwah dengan penuh kehati-hatian<br>4. Berdakwah dengan mengumpulkan banyak orang',
+                question: 'Yang termasuk dalam kategori dakwah secara sembunyi-sembunyi ditunjukkan dengan nomor...',
+                options: ['1 dan 2', '1 dan 3', '2 dan 3', '3 dan 4'],
+                correct: 1,
+                rationale: 'Dakwah sembunyi-sembunyi difokuskan mengajak orang terdekat dan dilakukan secara hati-hati agar tidak memicu gejolak kaum kafir Quraisy.'
+            },
+            {
+                id: 3,
+                type: 'pg',
+                question: 'Nabi Muhammad berdakwah pada periode awal kenabiannya (secara sembunyi-sembunyi) selama...',
+                options: ['1 tahun', '2 tahun', '3 tahun', '4 tahun'],
+                correct: 2,
+                rationale: 'Tahapan dakwah secara sembunyi-sembunyi (Dakwah Sirriyyah) berlangsung selama kurang lebih 3 tahun sebelum turun perintah berdakwah secara terang-terangan.'
+            },
+            {
+                id: 4,
+                type: 'pg',
+                question: 'Berikut ini yang termasuk tujuan dilakukannya dakwah secara sembunyi-sembunyi adalah...',
+                options: [
+                    'Berdakwah secara luas dan terstruktur',
+                    'Agama islam menyebar dengan cepat',
+                    'Mampu menarik perhatian orang Quraisy',
+                    'Menyebarkan agama islam secara efektif'
+                ],
+                correct: 3,
+                rationale: 'Tujuan dakwah sembunyi-sembunyi adalah menjaga keselamatan umat Islam yang masih sedikit serta menyebarkan ajaran Islam secara aman dan efektif.'
+            },
+            {
+                id: 5,
+                type: 'pg',
+                question: 'Periode dakwah secara sembunyi-sembunyi dilalui oleh Nabi Muhammad dan pengikutnya penuh dengan...',
+                options: ['Tantangan', 'Kemudahan', 'Bantuan', 'Kenyamanan'],
+                correct: 0,
+                rationale: 'Perjuangan dakwah awal di Makkah dipenuhi rintangan dan tantangan dari ancaman masyarakat kafir Quraisy.'
+            },
+            {
+                id: 6,
+                type: 'pg',
+                question: 'Ada beberapa sahabat Nabi Muhammad yang termasuk dalam golongan Assabiqunal Awalun. Assabiqunal Awalun artinya...',
+                options: [
+                    'Orang yang bersama nabi',
+                    'Orang yang pertama masuk islam',
+                    'Orang yang membela nabi',
+                    'Orang yang hidup pada periode awal dakwah nabi'
+                ],
+                correct: 1,
+                rationale: 'Secara bahasa dan istilah, Assabiqunal Awalun berarti orang-orang yang pertama kali memeluk agama Islam.'
+            },
+            {
+                id: 7,
+                type: 'pg',
+                question: 'Pada periode awal dakwah, Nabi Muhammad mengajak istrinya untuk masuk ke dalam agama Islam. Istri Nabi Muhammad bernama...',
+                options: ['Aisyah', 'Fatimah', 'Khadijah', 'Halimah'],
+                correct: 2,
+                rationale: 'Siti Khadijah binti Khuwailid RA adalah istri Rasulullah SAW dan merupakan wanita pertama yang beriman kepada ajaran Islam.'
+            },
+            {
+                id: 8,
+                type: 'pg',
+                passage: 'Perhatikan kolom di bawah ini!<br>1. Abu Bakar As-Siddiq<br>2. Khalid bin Walid<br>3. Umar bin Khattab<br>4. Zaid bin Harisah',
+                question: 'Dari nama-nama di atas, yang termasuk dalam Assabiqunal Awalun ditunjukkan oleh nomor...',
+                options: ['1 dan 3', '2 dan 3', '1 dan 4', '2 dan 4'],
+                correct: 2,
+                rationale: 'Abu Bakar As-Siddiq (golongan laki-laki dewasa) dan Zaid bin Harisah (golongan mantan hamba sahaya/kebebasan) adalah golongan Assabiqunal Awalun.'
+            },
+            {
+                id: 9,
+                type: 'pg',
+                passage: '<b>Bacalah teks di bawah ini!</b><br>Abu Bakar As-Siddiq adalah sahabat dekat Nabi Muhammad. Ia seorang yang sangat dipercaya oleh masyarakat Makkah. Abu Bakar tidak hanya menerima ajaran Islam dengan lapang dada untuk dirinya sendiri, akan tetapi juga merasa bertanggung jawab untuk menyebarkan agama Islam. Dengan penuh semangat dan keyakinan, ia mulai mengajak temannya untuk mengikuti agama Islam.',
+                question: 'Nilai keteladanan yang dipelajari dari sikap Abu Bakar tersebut adalah...',
+                options: ['Keberanian', 'Ketaatan', 'Keimanan', 'Kesabaran'],
+                correct: 2,
+                rationale: 'Keimanan dan keyakinan yang kuat mendorong Abu Bakar untuk aktif berdakwah dan mengajak sahabat-sahabatnya memeluk Islam.'
+            },
+            {
+                id: 10,
+                type: 'pg',
+                question: 'Arti dari gelar As-Siddiq yang dimiliki oleh sahabat Abu Bakar adalah...',
+                options: ['Pemaaf', 'Berani', 'Pintar', 'Jujur'],
+                correct: 3,
+                rationale: 'As-Siddiq artinya orang yang senantiasa berkata jujur dan membenarkan ajaran serta peristiwa yang dialami Rasulullah SAW.'
+            },
+            {
+                id: 11,
+                type: 'pg',
+                passage: '<b>Bacalah cerita berikut!</b><br>Ihsan adalah seorang siswa SD kelas 4. Ketika bel istirahat sekolah berbunyi, Ihsan bergegas menuju perpustakaan untuk membaca buku sejarah dakwah Nabi Muhammad. Dia menemukan informasi bahwasanya ketika berdakwah Nabi Muhammad dibantu oleh salah satu sahabat beliau yang bernama Abu Bakar As-Siddiq. Dari bantuan Abu Bakar inilah ajaran Islam menjadi semakin berkembang dan bertambah pengikutnya. Kekuatan dakwah Islam menjadi semakin besar. Setelah mengetahui informasi tersebut, Ihsan menjadi semakin termotivasi untuk belajar.',
+                question: 'Sahabat Nabi Muhammad yang membantu beliau dalam menyebarkan ajaran Islam berdasarkan bacaan di atas adalah...',
+                options: ['Ali bin Abi Thalib', 'Umar bin Khattab', 'Abu Bakar', 'Utsman bin Affan'],
+                correct: 2,
+                rationale: 'Berdasarkan teks bacaan, sahabat yang gigih membantu Rasulullah menyebarkan ajaran Islam adalah Abu Bakar As-Siddiq.'
+            },
+            {
+                id: 12,
+                type: 'pg',
+                question: 'Dari bacaan cerita pada nomor sebelumnya, manfaat menyebarnya agama Islam adalah...',
+                options: [
+                    'Ajaran Islam semakin ditentang oleh orang kafir',
+                    'Sahabat menjadi takut untuk berdakwah',
+                    'Kekuatan dakwah Islam menjadi besar',
+                    'Munculnya penentang agama Islam'
+                ],
+                correct: 2,
+                rationale: 'Teks menyatakan bahwa bertambahnya pengikut membuat ajaran Islam berkembang dan kekuatan dakwah Islam menjadi semakin besar.'
+            },
+            {
+                id: 13,
+                type: 'pg',
+                question: 'Menurut cerita tentang Ihsan di atas, hobi Ihsan adalah...',
+                options: ['Membaca', 'Menulis', 'Bermain', 'Bercerita'],
+                correct: 0,
+                rationale: 'Di awal cerita dijelaskan bahwa saat istirahat sekolah Ihsan bergegas ke perpustakaan untuk membaca buku.'
+            },
+            {
+                id: 14,
+                type: 'pg',
+                passage: 'Perhatikan tabel berikut ini!<br>1. Mempelajari ajaran Islam<br>2. Memperdalam iman<br>3. Mendiskusikan ajaran baru dengan aman<br>4. Merancang strategi perang',
+                question: 'Kegunaan "rumah rahasia" (Darul Arqam) yang digunakan Nabi Muhammad untuk berdakwah ditunjukkan nomor...',
+                options: ['1, 2, dan 3', '1, 3, dan 4', '2, 3, dan 4', '1, 2, dan 4'],
+                correct: 0,
+                rationale: 'Rumah Arqam bin Abi Arqam difungsikan sebagai pusat pembinaan iman, membaca Al-Qur’an, dan diskusi ajaran Islam secara aman, bukan untuk strategi perang.'
+            },
+            {
+                id: 15,
+                type: 'pg',
+                question: 'Kaum yang paling gigih menentang dakwah Nabi Muhammad pada masa awal kenabian di Makkah adalah kaum...',
+                options: ['Khazraj', 'Quraisy', 'Bani Israel', 'Syi’ah'],
+                correct: 1,
+                rationale: 'Kaum kafir Quraisy Makkah merupakan penentang utama dakwah Tauhid yang dibawa oleh Rasulullah SAW.'
+            },
+            {
+                id: 16,
+                type: 'pg',
+                question: 'Assabiqunal Awalun dari golongan anak-anak adalah...',
+                options: ['Abu Bakar As-Siddiq', 'Umar bin Khattab', 'Utsman bin Affan', 'Ali bin Abi Thalib'],
+                correct: 3,
+                rationale: 'Ali bin Abi Thalib RA (sepupu Rasulullah) adalah orang pertama dari kalangan anak-anak yang masuk Islam pada usia sekitar 10 tahun.'
+            },
+            {
+                id: 17,
+                type: 'pg',
+                question: 'Untuk melindungi pengikutnya dari ancaman masyarakat Makkah, Nabi Muhammad sering mengadakan pertemuan rahasia di rumah milik sahabat...',
+                options: ['Amr bin Ash', 'Arqam bin Abi Arqam', 'Ali bin Abi Thalib', 'Khalid bin Walid'],
+                correct: 1,
+                rationale: 'Pertemuan dan dakwah rahasia berpusat di rumah Arqam bin Abi Arqam (Darul Arqam) di bukit Shafa.'
+            },
+            {
+                id: 18,
+                type: 'pg',
+                question: 'Tuhan/sesembahan utama masyarakat Makkah sebelum Nabi Muhammad SAW mengajarkan agama Islam adalah...',
+                options: ['Matahari', 'Bulan', 'Berhala', 'Pohon besar'],
+                correct: 2,
+                rationale: 'Masyarakat Makkah pada zaman Jahiliyah menyembah berhala (patung-patung) yang dipasang di sekitar Ka’bah.'
+            },
+            {
+                id: 19,
+                type: 'pg',
+                question: 'Salah satu tokoh pemuda Quraisy yang pemberani yang masuk Islam setelah mendengar dan membaca lembaran Al-Qur’an (Surah Thaha) bernama...',
+                options: ['Abu Bakar As-Siddiq', 'Umar bin Khattab', 'Utsman bin Affan', 'Ali bin Abi Thalib'],
+                correct: 1,
+                rationale: 'Umar bin Khattab RA mendapat hidayah memeluk Islam setelah mendengarkan adiknya (Fatimah) membaca ayat-ayat Al-Qur’an Surah Thaha.'
+            },
+            {
+                id: 20,
+                type: 'pg',
+                question: 'Sikap mayoritas kaum kafir masyarakat Makkah pada periode awal dakwah Nabi Muhammad SAW adalah...',
+                options: ['Menerima dengan lapang dada', 'Mengikuti ajarannya', 'Menolak dengan keras', 'Mendukung dakwahnya'],
+                correct: 2,
+                rationale: 'Masyarakat Makkah menyikapi ajaran baru dengan penolakan keras, penindasan, dan ejekan terhadap Nabi dan sahabat.'
+            },
+            {
+                id: 21,
+                type: 'pg',
+                question: 'Di antara nama-nama di bawah ini, yang BUKAN termasuk golongan Assabiqunal Awalun adalah...',
+                options: ['Ali bin Abi Thalib', 'Siti Khadijah', 'Bilal bin Rabah', 'Aisyah binti Abu Bakar'],
+                correct: 3,
+                rationale: 'Aisyah binti Abu Bakar belum tergolong pemeluk awal saat mula dakwah karena masih berusia sangat muda/belum lahir pada tahun-tahun awal dakwah.'
+            },
+            {
+                id: 22,
+                type: 'pg',
+                question: 'Sahabat Nabi yang sangat terpandang, berpengaruh, dan dihormati masyarakat Makkah yang giat mendakwahkan Islam pada periode awal adalah...',
+                options: ['Abu Bakar As-Siddiq', 'Umar bin Khattab', 'Utsman bin Affan', 'Ali bin Abi Thalib'],
+                correct: 0,
+                rationale: 'Abu Bakar adalah pedagang kaya yang sangat terpandang dan luwes dalam bergaul sehingga berhasil mengislamkan banyak sahabat ternama.'
+            },
+            {
+                id: 23,
+                type: 'pg',
+                question: 'Dalam rangka melindungi umat Islam yang jumlahnya masih sedikit dari gangguan orang kafir Quraisy, strategi dakwah Rasulullah SAW adalah...',
+                options: ['Secara terang-terangan', 'Secara sembunyi-sembunyi', 'Mendatangi tokoh-tokoh', 'Mendoakan supaya masuk Islam'],
+                correct: 1,
+                rationale: 'Strategi awal dakwah secara sembunyi-sembunyi diterapkan untuk membina ketahanan akidah serta keselamatan pengikut awal.'
+            },
+            {
+                id: 24,
+                type: 'pg',
+                question: 'Istri Nabi yang menjadi orang pertama yang mengimani dan masuk Islam adalah...',
+                options: ['Aisyah', 'Ummu Salamah', 'Khadijah', 'Ruqayyah'],
+                correct: 2,
+                rationale: 'Khadijah binti Khuwailid RA adalah manusia pertama di bumi yang memeluk ajaran Islam dan mendukung dakwah Rasulullah dengan harta dan jiwanya.'
+            },
+            {
+                id: 25,
+                type: 'pg',
+                question: 'Selama dakwah secara sembunyi-sembunyi, Nabi Muhammad menghadapi banyak rintangan tetapi tetap tenang. Keteladanan yang dapat dipetik adalah...',
+                options: ['Keberanian', 'Kesabaran', 'Keteguhan', 'Ketaatan'],
+                correct: 1,
+                rationale: 'Ketenangan dalam menghadapi cobaan dan tekanan dakwah mencerminkan nilai keteladanan kesabaran yang sangat tinggi.'
+            }
+        ];
+
+        const isianData = [
+            {
+                id: 26,
+                type: 'isian',
+                question: 'Rasulullah melaksanakan dakwah secara sembunyi-sembunyi untuk menghindari gangguan dari...',
+                acceptKeys: ['kafir quraisy', 'quraisy', 'kaum quraisy', 'kaum kafir quraisy'],
+                correctText: 'Kaum Kafir Quraisy',
+                rationale: 'Dakwah sembunyi-sembunyi menjaga keselamatan pemeluk awal dari ancaman dan siksaan kaum Kafir Quraisy.'
+            },
+            {
+                id: 27,
+                type: 'isian',
+                question: 'Dakwah secara sembunyi-sembunyi dilaksanakan oleh Rasulullah SAW ketika berada di kota...',
+                acceptKeys: ['makkah', 'mekah', 'mekkah'],
+                correctText: 'Makkah',
+                rationale: 'Makkah Al-Mukarramah adalah tempat permulaan dakwah Islam sebelum peristiwa Hijrah ke Madinah.'
+            },
+            {
+                id: 28,
+                type: 'isian',
+                question: 'Sahabat Nabi yang menyediakan rumahnya sebagai tempat pertemuan dakwah rahasia adalah...',
+                acceptKeys: ['arqam bin abi arqam', 'arqam', 'darul arqam'],
+                correctText: 'Arqam bin Abi Arqam',
+                rationale: 'Rumah sahabat Arqam bin Abi Arqam (Darul Arqam) dijadikan markas pembinaan akidah awal.'
+            },
+            {
+                id: 29,
+                type: 'isian',
+                question: 'Sahabat Nabi yang termasuk dalam Assabiqunal Awalun memiliki akidah yang kuat. Arti kata Assabiqunal Awalun adalah...',
+                acceptKeys: ['orang yang pertama masuk islam', 'orang pertama masuk islam', 'pemeluk islam pertama', 'yang pertama masuk islam'],
+                correctText: 'Orang-orang yang pertama kali masuk/memeluk Islam',
+                rationale: 'Assabiqunal Awalun merujuk kepada para perintis pemeluk agama Islam di masa-masa paling awal.'
+            },
+            {
+                id: 30,
+                type: 'isian',
+                question: 'Dari golongan wanita, orang yang pertama kali beriman kepada Rasulullah SAW adalah...',
+                acceptKeys: ['khadijah', 'siti khadijah', 'khadijah binti khuwailid'],
+                correctText: 'Siti Khadijah',
+                rationale: 'Siti Khadijah RA merupakan wanita mulia pertama yang langsung membenarkan risalah kenabian Rasulullah SAW.'
+            },
+            {
+                id: 31,
+                type: 'isian',
+                question: 'Sahabat Nabi yang dalam mempertahankan aqidah rela disiksa dan dijemur di gurun pasir oleh majikannya bernama...',
+                acceptKeys: ['bilal', 'bilal bin rabah', 'bilal bin rabbah'],
+                correctText: 'Bilal bin Rabah',
+                rationale: 'Bilal bin Rabah disiksa oleh Umayyah bin Khalaf di atas pasir panas Makkah namun tetap teguh menyerukan "Ahad! Ahad!"'
+            },
+            {
+                id: 32,
+                type: 'isian',
+                question: 'Lahirnya generasi sahabat yang pemberani, bijaksana, solidaritas, dan sabar adalah hikmah dari dilaksanakan dakwah secara...',
+                acceptKeys: ['sembunyi-sembunyi', 'sembunyi sembunyi', 'sirriyyah', 'rahasia'],
+                correctText: 'Sembunyi-Sembunyi (Sirriyyah)',
+                rationale: 'Masa dakwah tersembunyi menempa karakter mental, kesabaran, dan persaudaraan yang kokoh di antara para sahabat.'
+            },
+            {
+                id: 33,
+                type: 'isian',
+                question: 'Sahabat Nabi yang diberi gelar As-Siddiq adalah...',
+                acceptKeys: ['abu bakar', 'abu bakar as-siddiq', 'abu bakar as shiddiq'],
+                correctText: 'Abu Bakar As-Siddiq',
+                rationale: 'Abu Bakar diberi gelar As-Siddiq karena selalu membenarkan ucapan dan tindakan Rasulullah SAW tanpa ragu.'
+            },
+            {
+                id: 34,
+                type: 'isian',
+                question: 'Sahabat Nabi yang mendapatkan hidayah masuk Islam setelah mendengar bacaan Al-Qur’an dari adiknya adalah...',
+                acceptKeys: ['umar', 'umar bin khattab', 'umar bin khatab'],
+                correctText: 'Umar bin Khattab',
+                rationale: 'Hati Umar bin Khattab melembut setelah menyimak indahnya bacaan Surah Thaha dari adiknya Fatimah binti Khattab.'
+            },
+            {
+                id: 35,
+                type: 'isian',
+                question: 'Dakwah secara sembunyi-sembunyi dilaksanakan oleh Nabi Muhammad SAW selama ... tahun.',
+                acceptKeys: ['3', 'tiga', '3 tahun', 'tiga tahun'],
+                correctText: '3 Tahun',
+                rationale: 'Nabi berdakwah secara rahasia selama 3 tahun sebelum Allah menurunkan perintah dakwah secara terbuka (terang-terangan).'
+            }
+        ];
+
+        // State variables
+        let activeQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let userLogs = [];
+        let isAnswered = false;
+
+        function startGame(mode) {
+            if (mode === 'pg') {
+                activeQuestions = [...pgData];
+            } else if (mode === 'isian') {
+                activeQuestions = [...isianData];
+            } else {
+                activeQuestions = [...pgData, ...isianData];
+            }
+
+            currentIndex = 0;
+            score = 0;
+            streak = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            userLogs = [];
+
+            document.getElementById('lobbyScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            isAnswered = false;
+            const q = activeQuestions[currentIndex];
+
+            // Update Header HUD
+            document.getElementById('scoreText').innerText = `Skor: ${score}`;
+            document.getElementById('streakText').innerText = `Streak: ${streak}`;
+            document.getElementById('progressText').innerText = `Soal ${currentIndex + 1} dari ${activeQuestions.length}`;
+
+            const percent = ((currentIndex) / activeQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+
+            // Reset UI components
+            document.getElementById('feedbackBox').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+
+            // Set badge & text
+            const badge = document.getElementById('questionBadge');
+            if (q.type === 'pg') {
+                badge.innerText = 'Pilihan Ganda';
+                badge.className = 'inline-block bg-indigo-100 text-indigo-800 font-bold text-xs px-3 py-1 rounded-full mb-3';
+            } else {
+                badge.innerText = 'Isian Singkat';
+                badge.className = 'inline-block bg-amber-100 text-amber-800 font-bold text-xs px-3 py-1 rounded-full mb-3';
+            }
+
+            // Passage Box
+            const passageBox = document.getElementById('passageBox');
+            if (q.passage) {
+                passageBox.innerHTML = q.passage;
+                passageBox.classList.remove('hidden');
+            } else {
+                passageBox.classList.add('hidden');
+            }
+
+            document.getElementById('questionText').innerText = q.question;
+
+            // Render options or input box
+            const pgOptions = document.getElementById('pgOptions');
+            const isianBox = document.getElementById('isianBox');
+
+            if (q.type === 'pg') {
+                isianBox.classList.add('hidden');
+                pgOptions.classList.remove('hidden');
+                pgOptions.innerHTML = '';
+
+                const labels = ['A', 'B', 'C', 'D'];
+                q.options.forEach((optText, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-bounce text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-indigo-400 bg-white transition flex items-center gap-3 font-medium text-slate-700 shadow-sm';
+                    btn.onclick = () => selectPGAnswer(idx);
+                    btn.id = `opt-${idx}`;
+                    btn.innerHTML = `
+                        <span class="w-8 h-8 rounded-xl bg-slate-100 border border-slate-300 text-slate-600 font-bold text-sm flex items-center justify-center shrink-0">${labels[idx]}</span>
+                        <span class="text-sm md:text-base">${optText}</span>
+                    `;
+                    pgOptions.appendChild(btn);
+                });
+            } else {
+                pgOptions.classList.add('hidden');
+                isianBox.classList.remove('hidden');
+                const input = document.getElementById('isianInput');
+                input.value = '';
+                input.disabled = false;
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+
+        function selectPGAnswer(selectedIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const q = activeQuestions[currentIndex];
+            const isCorrect = (selectedIndex === q.correct);
+
+            // Highlight buttons
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`opt-${idx}`);
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.className = 'text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold flex items-center gap-3 shadow-sm';
+                    btn.querySelector('span').className = 'w-8 h-8 rounded-xl bg-emerald-500 text-white font-bold text-sm flex items-center justify-center shrink-0';
+                } else if (idx === selectedIndex && !isCorrect) {
+                    btn.className = 'text-left p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-medium flex items-center gap-3 shadow-sm';
+                    btn.querySelector('span').className = 'w-8 h-8 rounded-xl bg-rose-500 text-white font-bold text-sm flex items-center justify-center shrink-0';
+                } else {
+                    btn.className = 'text-left p-4 rounded-2xl border border-slate-200 bg-slate-50 opacity-60 flex items-center gap-3 text-slate-500';
+                }
+            });
+
+            handleResult(isCorrect, q.options[selectedIndex], q.options[q.correct], q.rationale);
+        }
+
+        function submitIsianAnswer() {
+            if (isAnswered) return;
+
+            const input = document.getElementById('isianInput');
+            const userVal = input.value.trim().toLowerCase();
+            if (!userVal) return;
+
+            isAnswered = true;
+            input.disabled = true;
+
+            const q = activeQuestions[currentIndex];
+            const isCorrect = q.acceptKeys.some(key => userVal.includes(key));
+
+            handleResult(isCorrect, input.value.trim(), q.correctText, q.rationale);
+        }
+
+        function handleResult(isCorrect, userAnswerText, correctAnswerText, rationale) {
+            if (isCorrect) {
+                playSynthSound('correct');
+                streak++;
+                score += 10 + (streak > 1 ? streak * 2 : 0);
+                correctCount++;
+            } else {
+                playSynthSound('wrong');
+                streak = 0;
+                wrongCount++;
+            }
+
+            // Save Log
+            userLogs.push({
+                questionNumber: currentIndex + 1,
+                type: activeQuestions[currentIndex].type,
+                question: activeQuestions[currentIndex].question,
+                userAnswer: userAnswerText || '-',
+                correctAnswer: correctAnswerText,
+                isCorrect: isCorrect,
+                rationale: rationale
+            });
+
+            // Show Feedback
+            const feedbackBox = document.getElementById('feedbackBox');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+
+            feedbackBox.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackBox.className = 'p-4 rounded-2xl border border-emerald-300 bg-emerald-50/90 text-emerald-900 mb-6 animate-pop';
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+                feedbackTitle.innerText = 'Jawaban Tepat! (+10 Poin)';
+            } else {
+                feedbackBox.className = 'p-4 rounded-2xl border border-rose-300 bg-rose-50/90 text-rose-900 mb-6 animate-pop';
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+                feedbackTitle.innerText = `Kurang Tepat. Jawaban Benar: ${correctAnswerText}`;
+            }
+            feedbackText.innerText = rationale;
+
+            document.getElementById('scoreText').innerText = `Skor: ${score}`;
+            document.getElementById('streakText').innerText = `Streak: ${streak}`;
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < activeQuestions.length) {
+                renderQuestion();
+            } else {
+                finishGame();
+            }
+        }
+
+        function finishGame() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            const total = activeQuestions.length;
+            const accuracy = Math.round((correctCount / total) * 100);
+
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('finalCorrect').innerText = correctCount;
+            document.getElementById('finalWrong').innerText = wrongCount;
+            document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
+
+            const badge = document.getElementById('resultBadge');
+            const title = document.getElementById('resultTitle');
+            const subtitle = document.getElementById('resultSubtitle');
+
+            if (accuracy >= 80) {
+                playSynthSound('fanfare');
+                badge.className = 'w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl bg-emerald-100 text-emerald-600 shadow-lg';
+                title.innerText = 'Luar Biasa! Mumtaz! 🌟';
+                subtitle.innerText = 'Pemahamanmu tentang Sejarah Dakwah Rasulullah sangat istimewa!';
+            } else if (accuracy >= 60) {
+                badge.className = 'w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl bg-amber-100 text-amber-600 shadow-lg';
+                title.innerText = 'Kerja Bagus! 👍';
+                subtitle.innerText = 'Kamu sudah memahami sebagian besar materi dengan baik.';
+            } else {
+                badge.className = 'w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl bg-rose-100 text-rose-600 shadow-lg';
+                title.innerText = 'Tetap Semangat! 💪';
+                subtitle.innerText = 'Ayo pelajari lagi materinya dan coba sekali lagi!';
+            }
+
+            buildReviewList();
+        }
+
+        function buildReviewList() {
+            const list = document.getElementById('reviewList');
+            list.innerHTML = '';
+
+            userLogs.forEach((log) => {
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl border ${log.isCorrect ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/50'}`;
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <span class="font-bold text-xs uppercase px-2 py-0.5 rounded ${log.isCorrect ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800'}">
+                            Soal #${log.questionNumber} • ${log.isCorrect ? 'Benar' : 'Salah'}
+                        </span>
+                    </div>
+                    <p class="font-semibold text-slate-800 text-sm mb-2">${log.question}</p>
+                    <div class="text-xs space-y-1 text-slate-600 mb-2">
+                        <p><span class="font-bold">Jawabanmu:</span> <span class="${log.isCorrect ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}">${log.userAnswer}</span></p>
+                        ${!log.isCorrect ? `<p><span class="font-bold">Jawaban Seharusnya:</span> <span class="text-emerald-700 font-bold">${log.correctAnswer}</span></p>` : ''}
+                    </div>
+                    <div class="text-xs bg-white/80 p-2.5 rounded-lg border border-slate-200 text-slate-600">
+                        <span class="font-bold text-slate-700">Pembahasan:</span> ${log.rationale}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function toggleReviewModal() {
+            const container = document.getElementById('reviewContainer');
+            container.classList.toggle('hidden');
+        }
+
+        function confirmExit() {
+            if (confirm('Apakah Anda yakin ingin keluar dari permainan kuis ini? Progress kuis saat ini akan direset.')) {
+                resetLobby();
+            }
+        }
+
+        function resetLobby() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('reviewContainer').classList.add('hidden');
+            document.getElementById('lobbyScreen').classList.remove('hidden');
+        }
+
+        // Allow 'Enter' key submit for Isian answers
+        document.getElementById('isianInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                submitIsianAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
